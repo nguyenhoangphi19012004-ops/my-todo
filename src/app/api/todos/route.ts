@@ -2,20 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z, ZodError } from "zod";
 
-// Schema tạo mới
-const CreateTodoSchema = z.object({
+// Schema update
+const UpdateTodoSchema = z.object({
   title: z.string().min(1, "Title không được để trống"),
   description: z.string().optional().nullable(),
 });
 
-// GET tất cả todos
-export async function GET() {
+// PATCH
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const todos = await prisma.todo.findMany({
-      orderBy: { createdAt: "desc" },
+    const { id } = params;
+    const body = await req.json();
+    const data = UpdateTodoSchema.parse(body);
+
+    const updated = await prisma.todo.update({
+      where: { id },
+      data,
     });
-    return NextResponse.json(todos);
-  } catch (error) {
+
+    return NextResponse.json(updated);
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: error.issues.map((i) => i.message).join(", ") },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { error: (error as Error).message || "Unknown error" },
       { status: 500 }
@@ -23,21 +38,35 @@ export async function GET() {
   }
 }
 
-// POST tạo mới
-export async function POST(req: NextRequest) {
+// DELETE
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const body = await req.json();
-    const data = CreateTodoSchema.parse(body);
+    const { id } = params;
+    await prisma.todo.delete({ where: { id } });
+    return NextResponse.json({ message: "Deleted successfully" });
+  } catch (error: unknown) {
+    return NextResponse.json(
+      { error: (error as Error).message || "Unknown error" },
+      { status: 500 }
+    );
+  }
+}
 
-    const newTodo = await prisma.todo.create({ data });
-    return NextResponse.json(newTodo);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        { error: error.issues.map((i) => i.message).join(", ") },
-        { status: 400 }
-      );
-    }
+// GET một todo
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
+    const todo = await prisma.todo.findUnique({ where: { id } });
+    if (!todo)
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json(todo);
+  } catch (error: unknown) {
     return NextResponse.json(
       { error: (error as Error).message || "Unknown error" },
       { status: 500 }

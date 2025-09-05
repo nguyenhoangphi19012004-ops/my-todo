@@ -1,56 +1,97 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z, ZodError } from "zod";
 
-const UpdateTodoSchema = z.object({
-  title: z.string().min(1, "Title không được để trống"),
-  description: z.string().optional().nullable(),
+// Schema tạo Todo mới
+const CreateTodoSchema = z.object({
+  title: z.string().min(1, "Title is required").max(200),
+  description: z.string().optional(),
 });
 
-async function getIdFromContext(context: { params: Promise<{ id: string }> }) {
-  const params = await context.params;
-  return params.id;
+// Schema update Todo
+const UpdateTodoSchema = z.object({
+  title: z.string().min(1).max(200).optional(),
+  description: z.string().optional(),
+  completed: z.boolean().optional(),
+});
+
+// Schema validate id
+const IdSchema = z.string().min(1);
+
+// -------------------- GET --------------------
+// Lấy danh sách todo
+export async function GET() {
+  const todos = await prisma.todo.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json(todos);
 }
 
-// GET một todo
-export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
-  try {
-    const id = await getIdFromContext(context);
-    const todo = await prisma.todo.findUnique({ where: { id } });
-    if (!todo) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json(todo);
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
-  }
-}
 
-// PATCH update
-export async function PATCH(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+// -------------------- PATCH --------------------
+// Cập nhật Todo theo id
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const id = await getIdFromContext(context);
-    const body = await _req.json();
+    // Validate id
+    const id = IdSchema.parse(params.id);
+
+    // Validate body
+    const body = await req.json();
     const data = UpdateTodoSchema.parse(body);
 
-    const updated = await prisma.todo.update({ where: { id }, data });
+    // Update trong DB
+    const updated = await prisma.todo.update({
+      where: { id },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+        // Nếu không gửi description thì giữ nguyên
+        description:
+          data.description === undefined
+            ? undefined
+            : data.description ?? null,
+      },
+    });
+
     return NextResponse.json(updated);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: error.issues.map((i) => i.message).join(", ") },
         { status: 400 }
       );
     }
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Unknown error" }, { status: 400 });
   }
 }
 
-// DELETE
-export async function DELETE(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+// -------------------- DELETE --------------------
+// Xóa Todo theo id
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
-    const id = await getIdFromContext(context);
-    await prisma.todo.delete({ where: { id } });
-    return NextResponse.json({ message: "Deleted successfully" });
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+    const id = IdSchema.parse(params.id);
+
+    await prisma.todo.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Todo deleted successfully" });
+  } catch (error: unknown) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: error.issues.map((i) => i.message).join(", ") },
+        { status: 400 }
+      );
+    }
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Unknown error" }, { status: 400 });
   }
 }
