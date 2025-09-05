@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z, ZodError } from "zod";
 
-// Schema update
+// Schema
 const UpdateTodoSchema = z.object({
   title: z.string().min(1, "Title không được để trống"),
   description: z.string().optional().nullable(),
@@ -24,7 +24,7 @@ export async function PATCH(
     });
 
     return NextResponse.json(updated);
-  } catch (error: unknown) {
+  } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: error.issues.map((i) => i.message).join(", ") },
@@ -47,7 +47,7 @@ export async function DELETE(
     const { id } = params;
     await prisma.todo.delete({ where: { id } });
     return NextResponse.json({ message: "Deleted successfully" });
-  } catch (error: unknown) {
+  } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message || "Unknown error" },
       { status: 500 }
@@ -66,7 +66,7 @@ export async function GET(
     if (!todo)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(todo);
-  } catch (error: unknown) {
+  } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message || "Unknown error" },
       { status: 500 }
