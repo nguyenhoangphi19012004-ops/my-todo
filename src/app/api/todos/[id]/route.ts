@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z, ZodError } from "zod";
 
@@ -19,7 +19,6 @@ const UpdateTodoSchema = z.object({
 const IdSchema = z.string().min(1);
 
 // -------------------- GET --------------------
-// Lấy danh sách todo
 export async function GET() {
   const todos = await prisma.todo.findMany({
     orderBy: { createdAt: "desc" },
@@ -27,32 +26,25 @@ export async function GET() {
   return NextResponse.json(todos);
 }
 
-
 // -------------------- PATCH --------------------
-// Cập nhật Todo theo id
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> } // ✅ params là Promise
 ) {
   try {
-    // Validate id
-    const id = IdSchema.parse(params.id);
+    const { id } = await context.params; // await params
+    const validId = IdSchema.parse(id);
 
-    // Validate body
     const body = await req.json();
     const data = UpdateTodoSchema.parse(body);
 
-    // Update trong DB
     const updated = await prisma.todo.update({
-      where: { id },
+      where: { id: validId },
       data: {
         ...data,
         updatedAt: new Date(),
-        // Nếu không gửi description thì giữ nguyên
         description:
-          data.description === undefined
-            ? undefined
-            : data.description ?? null,
+          data.description === undefined ? undefined : data.description ?? null,
       },
     });
 
@@ -72,13 +64,16 @@ export async function PATCH(
 }
 
 // -------------------- DELETE --------------------
-// Xóa Todo theo id
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> } // ✅ params là Promise
+) {
   try {
-    const id = IdSchema.parse(params.id);
+    const { id } = await context.params; // await params
+    const validId = IdSchema.parse(id);
 
     await prisma.todo.delete({
-      where: { id },
+      where: { id: validId },
     });
 
     return NextResponse.json({ message: "Todo deleted successfully" });
