@@ -37,7 +37,7 @@ export default function RootLayout({
           </div>
 
           {/* Nội dung chính - grow để đẩy footer xuống */}
-          <main className="flex-1 bg-gray-100 flex mb-5">
+          <main className="flex-1 bg-gray-100 flex pb-5">
             {children}
           </main>
 
