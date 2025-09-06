@@ -36,11 +36,11 @@ export default function RootLayout({
         <div className="w-full h-[100vh] bg-gray-100 flex">
           {children}
         </div>
-        
+        <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
+          <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
+        </footer>
       </body>
-      <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
-        <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
-      </footer>
+      
     </html>
   );
 }
