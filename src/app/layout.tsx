@@ -37,12 +37,12 @@ export default function RootLayout({
           </div>
 
           {/* Nội dung chính - grow để đẩy footer xuống */}
-          <main className="flex-1 bg-gray-100 flex">
+          <main className="flex-1 bg-gray-100 flex mb-5">
             {children}
           </main>
 
           {/* Footer */}
-          <footer className="w-full mt-5 h-[10vh] bg-gray-400 flex items-center justify-center">
+          <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
             <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
           </footer>
         </div>
