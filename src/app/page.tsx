@@ -176,33 +176,34 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="flex gap-2 items-stretch">
-                {editingId === todo.id ? (
-                  <button
-                    onClick={() => updateTodo(todo.id)}
-                    className="px-3 py-1 rounded bg-green-500 text-white text-sm self-auto"
-                  >
-                    Save
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setEditingId(todo.id);
-                      setEditTitle(todo.title);
-                      setEditDescription(todo.description || "");
-                    }}
-                    className="px-3 py-1 rounded bg-blue-500 text-white text-sm self-auto"
-                  >
-                    Edit
-                  </button>
-                )}
-                <button
-                  onClick={() => deleteTodo(todo.id)}
-                  className="px-3 py-1 rounded bg-red-500 text-white text-sm self-auto"
-                >
-                  Delete
-                </button>
-              </div>
+              <div className="flex flex-col gap-2 items-start">
+  {editingId === todo.id ? (
+    <button
+      onClick={() => updateTodo(todo.id)}
+      className="px-3 py-1 rounded bg-green-500 text-white text-sm w-full sm:w-auto"
+    >
+      Save
+    </button>
+  ) : (
+    <button
+      onClick={() => {
+        setEditingId(todo.id);
+        setEditTitle(todo.title);
+        setEditDescription(todo.description || "");
+      }}
+      className="px-3 py-1 rounded bg-blue-500 text-white text-sm w-full sm:w-auto"
+    >
+      Edit
+    </button>
+  )}
+  <button
+    onClick={() => deleteTodo(todo.id)}
+    className="px-3 py-1 rounded bg-red-500 text-white text-sm w-full sm:w-auto"
+  >
+    Delete
+  </button>
+</div>
+
 
             </div>
           </div>
