@@ -28,12 +28,27 @@ export default function Home() {
   //     .catch(() => setTodos([]));
   // }, []);
 
-  useEffect(() => {
-  fetch("/api/todos")
-    .then((res) => res.json())
-    .then((data: Todo[]) => setTodos(data))
-    .catch(() => setTodos([]));
+ useEffect(() => {
+  const fetchTodos = async () => {
+    try {
+      const res = await fetch("/api/todos");
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        setTodos(data);
+      } else {
+        console.error("API không trả về mảng:", data);
+        setTodos([]);
+      }
+    } catch (err) {
+      console.error("Lỗi fetch todos:", err);
+      setTodos([]);
+    }
+  };
+
+  fetchTodos();
 }, []);
+
 
   // Thêm todo mới
   const addTodo = async () => {
@@ -125,7 +140,7 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {todos.map((todo) => (
+        {Array.isArray(todos) && todos.map((todo) => (
           <div
             key={todo.id}
             className="p-4 rounded-xl bg-white shadow-lg hover:shadow-2xl transition-shadow ring-1 ring-gray-100"
