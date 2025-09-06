@@ -24,22 +24,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="w-full h-[5vh] bg-gray-500 flex items-center justify-center">
-          <h1 className="mt-5 text-5xl text-white">* * *</h1>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className="flex flex-col min-h-screen">
+          {/* Header 1 */}
+          <div className="w-full h-[5vh] bg-gray-500 flex items-center justify-center">
+            <h1 className="mt-5 text-5xl text-white">* * *</h1>
+          </div>
+
+          {/* Header 2 */}
+          <div className="w-full h-[10vh] bg-white flex items-center justify-center">
+            <h1 className="text-3xl font-bold">Todo list test</h1>
+          </div>
+
+          {/* Nội dung chính - grow để đẩy footer xuống */}
+          <main className="flex-1 bg-gray-100 flex">
+            {children}
+          </main>
+
+          {/* Footer */}
+          <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
+            <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
+          </footer>
         </div>
-        <div className="w-full h-[10vh] bg-white flex items-center justify-center">
-          <h1 className="text-3xl font-bold">Todo list test </h1>
-        </div>
-        <div className="w-full h-[100vh] bg-gray-100 flex">
-          {children}
-        </div>
-        <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
-          <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
-        </footer>
       </body>
+
       
     </html>
   );
