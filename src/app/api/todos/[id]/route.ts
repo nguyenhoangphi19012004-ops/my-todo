@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z, ZodError } from "zod";
 
-// Schema tạo Todo mới
-const CreateTodoSchema = z.object({
-  title: z.string().min(1, "Title is required").max(200),
-  description: z.string().optional(),
-});
 
 // Schema update Todo
 const UpdateTodoSchema = z.object({
