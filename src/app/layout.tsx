@@ -31,7 +31,7 @@ export default function RootLayout({
           <h1 className="mt-5 text-5xl text-white">* * *</h1>
         </div>
         <div className="w-full h-[10vh] bg-white flex items-center justify-center">
-          <h1 className="text-3xl font-bold">Todo List</h1>
+          <h1 className="text-3xl font-bold">Todo list test </h1>
         </div>
         <div className="w-full h-[100vh] bg-gray-100 flex">
           {children}

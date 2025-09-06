@@ -7,51 +7,54 @@ type Todo = {
   description?: string | null;
   createdAt: string;
   updatedAt: string;
-
 };
 
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState("");
-  const [addError, setAddError] = useState(""); // lỗi khi add
-  const [editErrors, setEditErrors] = useState<{ [key: string]: string }>({}); // lỗi khi edit
+  const [description, setDescription] = useState("");
+  const [addError, setAddError] = useState("");
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editErrors, setEditErrors] = useState<{ [key: string]: string }>({});
 
-  // Load todos
+  // Fetch todos từ server
   useEffect(() => {
     fetch("/api/todos")
       .then((res) => res.json())
-      .then((data: Todo[]) => setTodos(data));
+      .then((data: Todo[]) => setTodos(data))
+      .catch(() => setTodos([]));
   }, []);
 
-  // Add todo
+  // Thêm todo mới
   const addTodo = async () => {
     if (!title.trim()) {
-      setAddError("Không được để trống mục này!");
+      setAddError("Title không được để trống!");
       return;
     }
     setAddError("");
 
     const res = await fetch("/api/todos", {
       method: "POST",
-      body: JSON.stringify({ title }),
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, description }),
     });
 
     if (!res.ok) {
       const { error } = await res.json();
-      setAddError(error || "Có lỗi xảy ra khi thêm todo");
+      setAddError(error || "Có lỗi khi thêm todo");
       return;
     }
 
     const newTodo: Todo = await res.json();
     setTodos([newTodo, ...todos]);
     setTitle("");
+    setDescription("");
   };
 
-  // Delete todo
+  // Xoá todo
   const deleteTodo = async (id: string) => {
     await fetch(`/api/todos/${id}`, { method: "DELETE" });
     setTodos(todos.filter((t) => t.id !== id));
@@ -67,8 +70,8 @@ export default function Home() {
 
     const res = await fetch(`/api/todos/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ title: editTitle }),
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: editTitle, description: editDescription }),
     });
 
     if (!res.ok) {
@@ -82,89 +85,104 @@ export default function Home() {
     setEditingId(null);
   };
 
-  return (      
-  <div className="w-4/5 mx-auto mt-10">
-  {/* Form thêm mới */}
-  <div className="flex gap-2 mb-4">
-  <input
-    value={title}
-    onChange={(e) => setTitle(e.target.value)}
-    className="border p-2 flex-1 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-    placeholder="New todo"
-  />
-  <button
-    onClick={addTodo}
-    className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition"
-  >
-    Add
-  </button>
-</div>
+  return (
+    <div className="w-4/5 mx-auto mt-10">
+      
+      <div className="flex flex-col gap-2 mb-4 p-5 bg-white rounded-xl shadow-md">
+        <h3 className="text-lg font-semibold">Add todo</h3>
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="border p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="New todo title"
+        />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Description"
+        />
+        <button
+          onClick={addTodo}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition"
+        >
+          Add
+        </button>
+      {addError && <p className="text-red-500">{addError}</p>}
+    </div>
 
-  {addError && <p className="text-red-500 text-sm mb-4">{addError}</p>}
 
-  {/* Danh sách todo dạng grid */}
-  {/* Danh sách todo dạng grid */}
-<div className="grid grid-cols-3 gap-4">
-  {todos.map((todo) => (
-    <div
-      key={todo.id}
-      className="p-4 rounded-xl bg-white shadow-lg hover:shadow-2xl transition-shadow ring-1 ring-gray-100"
-    >
-      <div className="flex items-center justify-between gap-3">
-        {editingId === todo.id ? (
-          <div className="flex-1">
-            <input
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              className="border p-2 w-full rounded"
-              autoFocus
-            />
-            {editErrors[todo.id] && (
-              <p className="text-red-500 text-xs mt-1">{editErrors[todo.id]}</p>
-            )}
-          </div>
-        ) : (
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-lg truncate">{todo.title}</p>
-            <div className="text-xs text-gray-500 mt-0.5 flex flex-wrap gap-x-2">
-              <span>Created: {new Date(todo.createdAt).toLocaleDateString()}</span>
-              <span>Updated: {new Date(todo.updatedAt).toLocaleDateString()}</span>
+      {/* Danh sách todos */}
+      <div className="flex justify-center">
+        <h1 className="text-2xl font-bold m-3">Todo list</h1>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        {todos.map((todo) => (
+          <div
+            key={todo.id}
+            className="p-4 rounded-xl bg-white shadow-lg hover:shadow-2xl transition-shadow ring-1 ring-gray-100"
+          >
+            <div className="flex items-center justify-between gap-3">
+              {editingId === todo.id ? (
+                <div className="flex-1 flex flex-col gap-1">
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="border p-2 w-full rounded"
+                    autoFocus
+                  />
+                  <textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="border p-2 w-full rounded"
+                  />
+                  {editErrors[todo.id] && (
+                    <p className="text-red-500 text-xs mt-1">{editErrors[todo.id]}</p>
+                  )}
+                </div>
+              ) : (
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-lg truncate">{todo.title}</p>
+                  {todo.description && <p className="text-gray-700 mt-1">{todo.description}</p>}
+                  <div className="text-xs text-gray-500 mt-0.5 flex flex-wrap gap-x-2">
+                    <span>Created: {new Date(todo.createdAt).toLocaleDateString()}</span>
+                    <span>Updated: {new Date(todo.updatedAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 shrink-0">
+                {editingId === todo.id ? (
+                  <button
+                    onClick={() => updateTodo(todo.id)}
+                    className="px-3 py-1 rounded bg-green-500 text-white text-sm"
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setEditingId(todo.id);
+                      setEditTitle(todo.title);
+                      setEditDescription(todo.description || "");
+                    }}
+                    className="px-3 py-1 rounded bg-blue-500 text-white text-sm"
+                  >
+                    Edit
+                  </button>
+                )}
+                <button
+                  onClick={() => deleteTodo(todo.id)}
+                  className="px-3 py-1 rounded bg-red-500 text-white text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
-        )}
-
-        {/* Bên phải: nút (ngang hàng với chữ) */}
-        <div className="flex items-center gap-2 shrink-0">
-          {editingId === todo.id ? (
-            <button
-              onClick={() => updateTodo(todo.id)}
-              className="px-3 py-1 rounded bg-green-500 text-white text-sm"
-            >
-              Save
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                setEditingId(todo.id);
-                setEditTitle(todo.title);
-              }}
-              className="px-3 py-1 rounded bg-blue-500 text-white text-sm"
-            >
-              Edit
-            </button>
-          )}
-          <button
-            onClick={() => deleteTodo(todo.id)}
-            className="px-3 py-1 rounded bg-red-500 text-white text-sm"
-          >
-            Delete
-          </button>
-        </div>
+        ))}
       </div>
     </div>
-  ))}
-</div>
-
-</div>
   );
 }
