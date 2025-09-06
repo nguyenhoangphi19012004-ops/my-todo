@@ -21,12 +21,19 @@ export default function Home() {
   const [editErrors, setEditErrors] = useState<{ [key: string]: string }>({});
 
   // Fetch todos từ server
+  // useEffect(() => {
+  //   fetch("/api/todos")
+  //     .then((res) => res.json())
+  //     .then((data: Todo[]) => setTodos(data))
+  //     .catch(() => setTodos([]));
+  // }, []);
+
   useEffect(() => {
-    fetch("/api/todos")
-      .then((res) => res.json())
-      .then((data: Todo[]) => setTodos(data))
-      .catch(() => setTodos([]));
-  }, []);
+  fetch("/api/todos")
+    .then((res) => res.json())
+    .then((data: Todo[]) => setTodos(data))
+    .catch(() => setTodos([]));
+}, []);
 
   // Thêm todo mới
   const addTodo = async () => {
