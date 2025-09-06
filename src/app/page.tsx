@@ -176,11 +176,11 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex gap-2 items-stretch">
                 {editingId === todo.id ? (
                   <button
                     onClick={() => updateTodo(todo.id)}
-                    className="px-3 py-1 rounded bg-green-500 text-white text-sm"
+                    className="px-3 py-1 rounded bg-green-500 text-white text-sm self-auto"
                   >
                     Save
                   </button>
@@ -191,18 +191,19 @@ export default function Home() {
                       setEditTitle(todo.title);
                       setEditDescription(todo.description || "");
                     }}
-                    className="px-3 py-1 rounded bg-blue-500 text-white text-sm"
+                    className="px-3 py-1 rounded bg-blue-500 text-white text-sm self-auto"
                   >
                     Edit
                   </button>
                 )}
                 <button
                   onClick={() => deleteTodo(todo.id)}
-                  className="px-3 py-1 rounded bg-red-500 text-white text-sm"
+                  className="px-3 py-1 rounded bg-red-500 text-white text-sm self-auto"
                 >
                   Delete
                 </button>
               </div>
+
             </div>
           </div>
         ))}
