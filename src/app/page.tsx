@@ -166,7 +166,9 @@ export default function Home() {
               ) : (
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-lg truncate">{todo.title}</p>
-                  {todo.description && <p className="text-gray-700 mt-1">{todo.description}</p>}
+                 {todo.description && (
+                    <p className="text-gray-700 mt-1 line-clamp-2">{todo.description}</p>
+                  )}
                   <div className="text-xs text-gray-500 mt-0.5 flex flex-wrap gap-x-2">
                     <span>Created: {new Date(todo.createdAt).toLocaleDateString()}</span>
                     <span>Updated: {new Date(todo.updatedAt).toLocaleDateString()}</span>
