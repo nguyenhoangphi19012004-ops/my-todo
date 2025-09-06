@@ -42,7 +42,7 @@ export default function RootLayout({
           </main>
 
           {/* Footer */}
-          <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
+          <footer className="w-full mt-5 h-[10vh] bg-gray-400 flex items-center justify-center">
             <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
           </footer>
         </div>
