@@ -20,14 +20,6 @@ export default function Home() {
   const [editDescription, setEditDescription] = useState("");
   const [editErrors, setEditErrors] = useState<{ [key: string]: string }>({});
 
-  // Fetch todos từ server
-  // useEffect(() => {
-  //   fetch("/api/todos")
-  //     .then((res) => res.json())
-  //     .then((data: Todo[]) => setTodos(data))
-  //     .catch(() => setTodos([]));
-  // }, []);
-
  useEffect(() => {
   const fetchTodos = async () => {
     try {

@@ -1,16 +1,14 @@
-// src/lib/db.ts
 import mysql from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
-import { todos } from "./schema"; // import từ schema.ts
+import * as schema from "./schema"; // import toàn bộ schema
 
-// Tạo kết nối MySQL
-const connection = await mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "mysql",
-  database: "my_to_do",
-});
+// Kiểm tra biến môi trường
+if (!process.env.DATABASE_URL) {
+  throw new Error("❌ DATABASE_URL is not set in .env.local");
+}
 
-// Tạo Drizzle ORM instance
-export const db = drizzle(connection);
+// Dùng connection pool để ổn định
+const pool = mysql.createPool(process.env.DATABASE_URL);
 
+// Xuất Drizzle ORM instance
+export const db = drizzle(pool, { schema, mode: "default" });

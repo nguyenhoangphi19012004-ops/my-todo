@@ -1,9 +1,10 @@
-import { mysqlTable, serial, text, varchar, timestamp } from "drizzle-orm/mysql-core";
+import { mysqlTable, serial, varchar, text, timestamp } from "drizzle-orm/mysql-core";
 
-export const todos = mysqlTable("todos", {
+export const todos = mysqlTable("Todo", {   
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
+

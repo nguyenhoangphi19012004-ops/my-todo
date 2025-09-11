@@ -13,10 +13,20 @@ const CreateTodoSchema = z.object({
 export async function GET() {
   try {
     const allTodos = await db.select().from(todos).orderBy(desc(todos.id));
-    return NextResponse.json(allTodos);
+
+    const formattedTodos = allTodos.map((todo) => ({
+      ...todo,
+      createdAt: new Date(todo.created_at).toISOString(),
+      updatedAt: new Date(todo.updated_at).toISOString(),
+    }));
+
+    return NextResponse.json(formattedTodos);
   } catch (e: unknown) {
     console.error("GET /api/todos error:", e);
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Unknown error" }, { status: 500 });
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }
 
