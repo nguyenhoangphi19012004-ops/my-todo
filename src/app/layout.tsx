@@ -33,12 +33,12 @@ export default function RootLayout({
         <div className="w-full h-[10vh] bg-white flex items-center justify-center">
           <h1 className="text-3xl font-bold">Todo List</h1>
         </div>
-        <div className="w-full h-[100vh] bg-gray-100 flex">
-          {children}
-        </div>
+       <div className="w-full min-h-screen bg-gray-100 flex">
+        {children}
+      </div>
         
       </body>
-      <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center">
+      <footer className="w-full h-[10vh] bg-gray-400 flex items-center justify-center mt-5">
         <h2 className="text-xl">Bài test Todo list của Hoàng Phi</h2>
       </footer>
     </html>

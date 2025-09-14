@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "drizzle-orm": "^0.44.5",
+    "highcharts": "^12.4.0",
+    "highcharts-react-official": "^3.2.2",
     "mysql2": "^3.14.5",
     "next": "15.5.2",
     "react": "19.1.0",
@@ -21,6 +23,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.13",
+    "@types/highcharts": "^5.0.44",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

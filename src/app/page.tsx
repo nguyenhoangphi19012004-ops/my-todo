@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-
+import MyChart from '@/components/MyChart';
+import ChartToDo from '@/components/ChartToDo';
 type Todo = {
   id: string;
   title: string;
@@ -41,7 +42,15 @@ export default function Home() {
   fetchTodos();
 }, []);
 
-
+  function groupTodosByDate(todos: Todo[]) {
+    const map: Record<string, number> = {};
+    todos.forEach((todo) => {
+      const date = new Date(todo.createdAt).toLocaleDateString();
+      map[date] = (map[date] || 0) + 1;
+    });
+    return Object.entries(map).map(([date, count]) => ({ date, count }));
+  }
+  const chartData = groupTodosByDate(todos);
   // Thêm todo mới
   const addTodo = async () => {
     if (!title.trim()) {
@@ -124,14 +133,16 @@ export default function Home() {
         </button>
       {addError && <p className="text-red-500">{addError}</p>}
     </div>
-
+      <div className="flex flex-col gap-2 mb-4 p-5 bg-white rounded-xl shadow-md">
+        
+      </div>
 
       {/* Danh sách todos */}
       <div className="flex justify-center">
         <h1 className="text-2xl font-bold m-3">Todo list</h1>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 ">
         {Array.isArray(todos) && todos.map((todo) => (
           <div
             key={todo.id}
@@ -196,10 +207,21 @@ export default function Home() {
                 </button>
               </div>
 
-
             </div>
           </div>
+          
         ))}
+        
+      </div>
+      <div className="grid grid-cols-1 gap-1 mt-6">
+        <div className="p-5 bg-white rounded-xl shadow-md">
+          <MyChart />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-1 mt-6">
+        <div className="p-5 bg-white rounded-xl shadow-md">
+           <ChartToDo data={chartData} />
+        </div>
       </div>
     </div>
   );
