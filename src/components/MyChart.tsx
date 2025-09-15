@@ -14,6 +14,11 @@ export default function MyChart() {
         name: '2025',
         data: [5, 5, 15, 6],
       },
+      {
+        type: 'line',
+        name: '2025',
+        data: [6, 4, 25, 4],
+      },
     ],
   };
   

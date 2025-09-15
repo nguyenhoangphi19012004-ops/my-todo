@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import MyChart from '@/components/MyChart';
+import StockChart from '@/components/StockChart';
 import ChartToDo from '@/components/ChartToDo';
+
 type Todo = {
   id: string;
   title: string;
@@ -133,9 +135,6 @@ export default function Home() {
         </button>
       {addError && <p className="text-red-500">{addError}</p>}
     </div>
-      <div className="flex flex-col gap-2 mb-4 p-5 bg-white rounded-xl shadow-md">
-        
-      </div>
 
       {/* Danh sách todos */}
       <div className="flex justify-center">
@@ -223,6 +222,12 @@ export default function Home() {
            <ChartToDo data={chartData} />
         </div>
       </div>
+      <div className="grid grid-cols-1 gap-1 mt-6">
+        <div className="p-5 bg-white rounded-xl shadow-md">
+           <StockChart />
+        </div>
+      </div>
+      
     </div>
   );
 }
